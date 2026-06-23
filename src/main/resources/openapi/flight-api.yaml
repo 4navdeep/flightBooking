@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  title: Flight Search API
+  description: API for searching available flights
+  version: 1.0.0
+  contact:
+    name: Flight Booking Team
+servers:
+  - url: http://localhost:8080
+    description: Development server
+paths:
+  /api/flights/search:
+    post:
+      summary: Search available flights
+      operationId: searchFlights
+      tags:
+        - flights
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightSearchRequest'
+      responses:
+        '200':
+          description: List of available flights
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightSearchResponse'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    FlightSearchRequest:
+      type: object
+      required:
+        - flightNumber
+      properties:
+        flightNumber:
+          type: string
+          description: Flight number to search
+          example: "AA100"
+        departureDate:
+          type: string
+          format: date
+          description: Departure date (optional)
+          example: "2026-07-15"
+
+    FlightSearchResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlightInfo'
+
+    FlightInfo:
+      type: object
+      required:
+        - flightNumber
+        - departureCity
+        - arrivalCity
+        - departureTime
+        - arrivalTime
+        - totalSeats
+        - availableSeats
+        - pricePerSeat
+      properties:
+        flightNumber:
+          type: string
+          example: "AA100"
+        departureCity:
+          type: string
+          example: "New York"
+        arrivalCity:
+          type: string
+          example: "Los Angeles"
+        departureTime:
+          type: string
+          format: date-time
+          example: "2026-07-15T08:00:00Z"
+        arrivalTime:
+          type: string
+          format: date-time
+          example: "2026-07-15T11:30:00Z"
+        totalSeats:
+          type: integer
+          example: 150
+        availableSeats:
+          type: integer
+          example: 120
+        pricePerSeat:
+          type: number
+          format: double
+          example: 299.99
+

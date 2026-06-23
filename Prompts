@@ -1,0 +1,27 @@
+PROMPT 1 :
+
+As a senior Java Developer, create a springboot project, where controller are generated using swagger-codegen-maven-
+plugin and specific folder structure where swagger json will go.
+For each Swagger JSON/OpenAPI spec added to this project, generation will create:
+Controller/service API contracts (endpoint signatures)
+RequestVO classes for request payloads
+ResponseVO classes for response payloads
+Mainly focus on Search flights → Book ticket → View booking → Cancel booking.
+controller/
+├── FlightController.java
+├── BookingController.java
+└── HealthController.java
+• Use Spring Boot and Java
+• Single application instance (no distributed systems concerns)
+• No authentication, authorization, or rate limiting
+• No flight search or destination logic
+• Assume the client already knows the flight number
+• Use in-memory storage only (no database required)
+• Ensure flights cannot be overbooked
+• Only implement booking APIs (no retrieval endpoints required)
+• Use appropriate HTTP methods and status codes
+Deliverables
+• Runnable Spring Boot project (Maven)
+• A short README.md including:
+• How to run the service
+• Example requests

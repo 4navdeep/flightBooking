@@ -1,0 +1,198 @@
+openapi: 3.0.0
+info:
+  title: Flight Booking API
+  description: API for booking, viewing, and cancelling flights
+  version: 1.0.0
+  contact:
+    name: Flight Booking Team
+servers:
+  - url: http://localhost:8080
+    description: Development server
+paths:
+  /api/bookings:
+    post:
+      summary: Book a flight
+      operationId: bookFlight
+      tags:
+        - bookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Booking created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '400':
+          description: Invalid request
+        '409':
+          description: Flight fully booked or invalid booking
+        '500':
+          description: Internal server error
+
+  /api/bookings/{bookingId}:
+    get:
+      summary: Get booking details
+      operationId: getBooking
+      tags:
+        - bookings
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '404':
+          description: Booking not found
+        '500':
+          description: Internal server error
+
+    delete:
+      summary: Cancel a booking
+      operationId: cancelBooking
+      tags:
+        - bookings
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Booking cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancellationResponse'
+        '404':
+          description: Booking not found
+        '409':
+          description: Booking cannot be cancelled
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    BookingRequest:
+      type: object
+      required:
+        - flightNumber
+        - numberOfPassengers
+        - passengers
+      properties:
+        flightNumber:
+          type: string
+          example: "AA100"
+        numberOfPassengers:
+          type: integer
+          minimum: 1
+          example: 2
+        passengers:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PassengerInfo'
+
+    PassengerInfo:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+          example: "John"
+        lastName:
+          type: string
+          example: "Doe"
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+        phoneNumber:
+          type: string
+          example: "+1-555-1234"
+
+    BookingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/Booking'
+
+    Booking:
+      type: object
+      required:
+        - bookingId
+        - flightNumber
+        - status
+        - totalPrice
+        - passengers
+        - bookingDate
+      properties:
+        bookingId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        flightNumber:
+          type: string
+          example: "AA100"
+        status:
+          type: string
+          enum: [CONFIRMED, CANCELLED]
+          example: "CONFIRMED"
+        totalPrice:
+          type: number
+          format: double
+          example: 599.98
+        numberOfSeatsBooked:
+          type: integer
+          example: 2
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PassengerInfo'
+        bookingDate:
+          type: string
+          format: date-time
+          example: "2026-06-22T10:30:00Z"
+
+    CancellationResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        data:
+          type: object
+          properties:
+            bookingId:
+              type: string
+              format: uuid
+            status:
+              type: string
+              enum: [CANCELLED]
+            refundAmount:
+              type: number
+              format: double
+

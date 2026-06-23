@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+  title: Health Check API
+  description: API for health check and service status
+  version: 1.0.0
+  contact:
+    name: Flight Booking Team
+servers:
+  - url: http://localhost:8080
+    description: Development server
+paths:
+  /api/health:
+    get:
+      summary: Check service health status
+      operationId: getHealth
+      tags:
+        - health
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '500':
+          description: Service is down
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN]
+          example: "UP"
+        timestamp:
+          type: string
+          format: date-time
+        service:
+          type: string
+          example: "Flight Booking Service"
+        version:
+          type: string
+          example: "1.0.0"
+
